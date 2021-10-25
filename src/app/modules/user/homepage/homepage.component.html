@@ -1,0 +1,452 @@
+<app-navbar></app-navbar>
+
+<div class="wrapper">
+  <!-- Sidebar  -->
+  <app-sidebar></app-sidebar>
+  <!-- Page Content  -->
+  <div id="content">
+    <div
+      class="search-results"
+      infiniteScroll
+      [infiniteScrollDistance]="2"
+      [infiniteScrollThrottle]="50"
+      (scrolled)="onScroll()"
+    >
+      <div class="row row-cols-1 row-cols-md-5 g-4">
+        <div
+          class="card card-margin relative"
+          *ngFor="let product of products; index as i"
+        >
+          {{ i + 1 }}
+          <img
+            class="card-img-top"
+            src="https://m.media-amazon.com/images/I/41i3mc+lxdL._AC_SY200_.jpg"
+            alt="Card image cap"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">
+              {{ product.detail }}
+            </p>
+            <button
+              class="btn btn-primary m-1 absolute-down"
+              (click)="addToCart(product.id)"
+            >
+              add to cart
+            </button>
+            <button
+              class="btn btn-primary m-1 absolute-down"
+              (click)="editProduct(product.id)"
+              class="btn btn-primary m-1"
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#updateModal"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-pencil-square"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+                />
+                <path
+                  fill-rule="evenodd"
+                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                />
+              </svg>
+            </button>
+            <button
+              class="btn btn-primary m-1 absolute-down"
+              (click)="openDialog(product.id, i)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-trash"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
+                />
+                <path
+                  fill-rule="evenodd"
+                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModalCenter"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">add product</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="productForm">
+              <div class="form-group">
+                <label>Product Name : </label>
+                <input
+                  [class.is-invalid]="
+                    productForm?.get('name')?.invalid &&
+                    productForm?.get('name')?.touched
+                  "
+                  formControlName="name"
+                  type="text"
+                  class="form-control input-border"
+                />
+                <div
+                  *ngIf="
+                    productForm?.get('name')?.invalid &&
+                    productForm?.get('name')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('name')?.errors?.required"
+                    class="text-danger"
+                    >name required</small
+                  >
+                  <small
+                    *ngIf="productForm?.get('name')?.errors?.minlength"
+                    class="text-danger"
+                    >min length 3</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Price : </label>
+                <input
+                  [class.is-invalid]="
+                    productForm?.get('price')?.invalid &&
+                    productForm?.get('price')?.touched
+                  "
+                  formControlName="price"
+                  type="text"
+                  class="form-control input-border"
+                />
+                <div
+                  *ngIf="
+                    productForm?.get('price')?.invalid &&
+                    productForm?.get('price')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('price')?.errors?.required"
+                    class="text-danger"
+                    >price required</small
+                  >
+                  <small
+                    *ngIf="productForm?.get('price')?.errors?.minlength"
+                    class="text-danger"
+                    >min length 3</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label>catagory :</label>
+                <select
+                  [class.is-invalid]="
+                    productForm?.get('productCategoryId')?.invalid &&
+                    productForm?.get('productCategoryId')?.touched
+                  "
+                  formControlName="productCategoryId"
+                  type="text"
+                  class="form-control input-border"
+                >
+                  <option value="default">select catagory</option>
+                  <option *ngFor="let category of categories">
+                    {{ category.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1"
+                  >Product Detail :</label
+                >
+                <textarea
+                  [class.is-invalid]="
+                    productForm?.get('detail')?.invalid &&
+                    productForm?.get('detail')?.touched
+                  "
+                  formControlName="detail"
+                  type="text"
+                  class="form-control input-border"
+                ></textarea>
+                <div
+                  *ngIf="
+                    productForm?.get('detail')?.invalid &&
+                    productForm?.get('detail')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('detail')?.errors?.required"
+                    class="text-danger"
+                    >Product Details required</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1"
+                  >Product Feature :</label
+                >
+                <textarea
+                  [class.is-invalid]="
+                    productForm?.get('feature')?.invalid &&
+                    productForm?.get('feature')?.touched
+                  "
+                  formControlName="feature"
+                  type="text"
+                  class="form-control input-border"
+                ></textarea>
+                <div
+                  *ngIf="
+                    productForm?.get('feature')?.invalid &&
+                    productForm?.get('feature')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('feature')?.errors?.required"
+                    class="text-danger"
+                    >Product features required</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <div [innerHtml]="msg" *ngIf="msg" style="color: red"></div>
+                <div>
+                  <img [src]="url" width="100" height="100" *ngIf="url" />
+                </div>
+                <p>
+                  <input
+                    type="file"
+                    name="profilePic"
+                    class="profilePic"
+                    (change)="selectFile($event)"
+                  />
+                </p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" (click)="submit()">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ------------------------modal2--------------------------- -->
+    </div>
+    <div
+      class="modal fade"
+      id="updateModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">
+              update product
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="productForm">
+              <div class="form-group">
+                <label>Product Name : </label>
+                <input
+                  [class.is-invalid]="
+                    productForm?.get('name')?.invalid &&
+                    productForm?.get('name')?.touched
+                  "
+                  formControlName="name"
+                  type="text"
+                  class="form-control input-border"
+                />
+                <div
+                  *ngIf="
+                    productForm?.get('name')?.invalid &&
+                    productForm?.get('name')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('name')?.errors?.required"
+                    class="text-danger"
+                    >name required</small
+                  >
+                  <small
+                    *ngIf="productForm?.get('name')?.errors?.minlength"
+                    class="text-danger"
+                    >min length 3</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Price : </label>
+                <input
+                  [class.is-invalid]="
+                    productForm?.get('price')?.invalid &&
+                    productForm?.get('price')?.touched
+                  "
+                  formControlName="price"
+                  type="text"
+                  class="form-control input-border"
+                />
+                <div
+                  *ngIf="
+                    productForm?.get('price')?.invalid &&
+                    productForm?.get('price')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('price')?.errors?.required"
+                    class="text-danger"
+                    >price required</small
+                  >
+                  <small
+                    *ngIf="productForm?.get('price')?.errors?.minlength"
+                    class="text-danger"
+                    >min length 3</small
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1"
+                  >Product Detail :</label
+                >
+                <textarea
+                  [class.is-invalid]="
+                    productForm?.get('detail')?.invalid &&
+                    productForm?.get('detail')?.touched
+                  "
+                  formControlName="detail"
+                  type="text"
+                  class="form-control input-border"
+                ></textarea>
+                <div
+                  *ngIf="
+                    productForm?.get('detail')?.invalid &&
+                    productForm?.get('detail')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('detail')?.errors?.required"
+                    class="text-danger"
+                    >Product Details required</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1"
+                  >Product Feature :</label
+                >
+                <textarea
+                  [class.is-invalid]="
+                    productForm?.get('feature')?.invalid &&
+                    productForm?.get('feature')?.touched
+                  "
+                  formControlName="feature"
+                  type="text"
+                  class="form-control input-border"
+                ></textarea>
+                <div
+                  *ngIf="
+                    productForm?.get('feature')?.invalid &&
+                    productForm?.get('feature')?.touched
+                  "
+                >
+                  <small
+                    *ngIf="productForm?.get('feature')?.errors?.required"
+                    class="text-danger"
+                    >Product features required</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <div [innerHtml]="msg" *ngIf="msg" style="color: red"></div>
+                <div>
+                  <img [src]="url" width="100" height="100" *ngIf="url" />
+                </div>
+                <p>
+                  <input
+                    type="file"
+                    name="profilePic"
+                    class="profilePic"
+                    (change)="selectFile($event)"
+                  />
+                </p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" (click)="update()">
+              update
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row pb-5">
+        <div class="col-md-12 p-5">
+          <ngx-spinner
+            bdOpacity="0.9"
+            bdColor=""
+            size="default"
+            color="#581f87"
+            type="ball-pulse-sync"
+          ></ngx-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

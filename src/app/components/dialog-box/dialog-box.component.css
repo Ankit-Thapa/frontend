@@ -1,0 +1,11 @@
+.background {
+  background-color: blanchedalmond;
+}
+.mat-dialog-0 {
+  background-color: white;
+}
+
+.dialog-container-custom .mat-dialog-container {
+  padding: 0;
+  background: rgb(255, 255, 255);
+}

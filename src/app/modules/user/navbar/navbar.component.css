@@ -1,0 +1,9 @@
+.display {
+  display: none;
+}
+a {
+  margin-right: 1%;
+}
+a:hover {
+  cursor: pointer;
+}

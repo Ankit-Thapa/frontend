@@ -1,0 +1,40 @@
+<h1>Cart</h1>
+<h2>{{ msg }}</h2>
+<div class="relative">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Sl No.</th>
+        <th scope="col">Product Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Detail</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let data of productData; index as i">
+        <th scope="row">{{ i + 1 }}</th>
+        <th scope="row">{{ data.id }}</th>
+        <td>{{ data.name }}</td>
+        <td>{{ data.price }}</td>
+        <td>{{ data.detail }}</td>
+      </tr>
+      <div class="absolute">
+        <tr *ngFor="let cartD of cartData; index as i">
+          <td>
+            <button
+              class="btn btn-primary btn-size"
+              (click)="delete(cartD.id, i)"
+            >
+              delete
+            </button>
+          </td>
+        </tr>
+      </div>
+    </tbody>
+  </table>
+</div>
+<h2 class="inline">total =</h2>
+<h2 class="inline">{{ totalPrice }}</h2>
+<button class="btn btn-primary">place order</button>
